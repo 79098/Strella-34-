@@ -1,0 +1,103 @@
+#---------SCRIPT COMENTADO PARA REGRESIÓN LINEAL SIMPLE EN R---------
+#----------------Realizado por Estrella Gonzalez --------------------
+#Instalamos las librerias que vamos a usar (solo se hace una vez)
+install.packages("readr")
+install.packages("tidyverse")
+install.packages("ggplot2")
+install.packages("boot")
+install.packages("QuantPsyc")
+install.packages("car")
+install.packages("conflicted")
+#llamamos a las librerias (esto lo tienes que repetir cada que
+comienzas un proyecto)
+library(tidyverse)
+library(ggplot2)
+library(boot)
+library(QuantPsyc)
+library(car)
+#llamamos al archivo, recuerda que debes colocar en el paréntesis el
+nombre que tiene tu archivo con la base de datos en formato CSV
+attach(betterlifeindex_reducida)
+#recordamos los nombres que pusimos en cada columna
+names(betterlifeindex_reducida)
+#Examinamos la correlación entre los datos en (y) y (x)
+#usamos la función cor.test(y,x) para calcularla, recuerda que (x) es
+#tu variable independiente y (y) tu variable dependiente y que al usar
+#la función cor.test(y,x) debes sustituir “y” y “x” por los nombres de
+#las variables, según aparecen en el archivo Excel que descargaste, que
+#en teoría, son los mismos que están en tu archivo CSV
+#correlación es una medida estadística que expresa hasta qué punto dos
+#variables están relacionadas linealmente
+#Por ejemplo, si mi variable independiente es
+#“anoanospromedioescolaridad” y la dependiente es
+#“poblacionensituaciondepobreza”, entonces el comando queda como sigue:
+cor.test(`poblacionensituaciondepobreza`, anospromedioescolaridad)
+#Hacemos la regresión lineal
+#El comando básico es lm(linear models)
+#El primer argumento de este comando es una fórmula y ~ x en la que:
+#y es la variable respuesta o dependiente
+#x es la variable regresora o independiente
+#data indica el fichero en el que se encuentran las variables
+#En este comando debes sustituir los nombres de las variables
+#“poblacionensituaciondepobreza” que es (y) y “anospromedioescolaridad”
+#que es (x), por aquellos que corresponden a las variables de tu
+#análisis
+#El resultado lo guardamos en un objeto llamado regresion_lineal, lo
+#que ya está incluido en el comando que te damos a continuacion
+regresion_lineal=lm(`poblacionensituaciondepobreza` ~
+anospromedioescolaridad, data = betterlifeindex_reducida)
+#para ver los resultados de la regresión usamos la función summary
+summary(regresion_lineal)
+#----------¿Cómo interpretamos los resultados?--------------------
+#Call: muestra la formula con la que obtuvimos el modelo
+#Residuals: nos da valores estadísticos sobre la distribución de los
+#residuos del modelo.
+#Coefficients: muestra los coeficientes estimados por el modelo,
+#------Recuerda que una regresión lineal tiene la forma y=mx+b-----
+#Intercept=b es el valor que intercepta la recta con el eje “y” con x=0
+#El segundo valor es la pendiente
+#std. Error es la desviación estándar de los valores encontrados
+#El valor p de cada término evalúa la hipótesis nula de que el
+#coeficiente =0 (no hay efecto)
+#Un valor p bajo (< 0.05) indica que se puede rechazar la hipótesis
+#nula (la hipótesis nula nos dice que no existe relación entre las
+#variables)
+#un valor de “p” grande indica que los cambios en el predictor o
+#variable independiente no están asociados con cambios en la respuesta
+# o variable dependiente.
+#RSE mide la desviación estándar de los residuos, que son las
+#diferencias entre los valores
+#observados de la variable dependiente y los valores predichos por el
+#modelo
+#Adjusted R-squared, entre más cerca esté de 1, la recta ajusta mejor a
+#los puntos, y también es la varianza explicada, es decir,en qué medida
+#(expresada en términos de porcentaje)mi variable independiente explica
+#la variabilidad de mi variable dependiente.
+#F-statistic mide si el modelo de regresión es útil para predecir la
+#variable dependiente
+#Hacemos la gráfica con plot(y ~ x)
+plot(`participacioncivicaypolitica` ~ anospromedioescolaridad ,
+pch=16,col='blue', bty='l',ylab='%
+participacioncivicaypolitica',xlab='anospromedioescolaridad')
+#ponemos la línea que describe el ajuste de datos
+abline(regresion_lineal, col="red", lwd=2)
+#Podemos interpretar el modelo de regresión lineal como sigue:
+#El valor del Residual standard error (RSE) es de (colocar aquí el
+#valor que arroja el resultado) unidades en la escala de la variable
+#dependiente.
+#El valor del coeficiente de determinación múltiple (Multiple
+#R-squared) es la varianza explicada e indica el porcentaje en el que
+#mi variable independiente explica la variabilidad total de mi
+#variable dependiente.
+#El valor del coeficiente de determinación ajustado (Adjusted
+#R-squared) ajusta el coeficiente de determinación
+#múltiple por el número de variables explicativas y el tamaño de la
+#muestra. Nos indica si el modelo es una buena representación de los
+#datos, incluso después de ajustar por el número de variables
+explicativas y el tamaño de la #muestra.
+#El valor del estadístico “F” es mide la relación entre la variabilidad
+#explicada y la variabilidad no explicada en el modelo. Un valor alto
+#de “F” y un valor bajo de “p” #indican que el modelo es significativo.
+#El valor de “p” nos indica si el modelo es significativo con un nivel
+#de confianza del 95%.
+#Datos obtenidos de https://www.inegi.org.mx/app/bienestar/
